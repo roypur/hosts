@@ -1,4 +1,3 @@
-
 127.0.0.1 localhost
 127.0.0.1 localhost.localdomain
 255.255.255.255 broadcasthost
@@ -21566,4 +21565,3 @@
 ::1 xxyyzz.youcanoptout.com
 127.0.0.1 meta.wikimedia.org
 ::1 meta.wikimedia.org
-::123 meta.kk.lk

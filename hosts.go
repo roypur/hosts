@@ -93,6 +93,7 @@ func rmDupes(pretty []string)string{
     }
     
     var retVal string = strings.Join(final, "\n");
+    retVal = strings.TrimSpace(retVal);
     return retVal;
 }
 
