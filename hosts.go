@@ -8,10 +8,12 @@ import ("net/http"
 
 func main(){
     content := fetch();
-    fmt.Println(clear(content));
+    pretty := format(content);
+    toUser := rmDupes(pretty);
+    fmt.Println(toUser);
 }
 
-func fetch()string{
+func fetch()[]string{
     
     var server string = "https://raw.githubusercontent.com/roypur/hosts/master/src";
     
@@ -21,7 +23,7 @@ func fetch()string{
     
     src := strings.Split(strings.TrimSpace(string(body)), "\n");
     
-    appendString := []string{};
+    requestData := []string{};
     
     var j int = len(src) - 1;
     
@@ -30,20 +32,21 @@ func fetch()string{
         defer resp.Body.Close();
         body,_ := ioutil.ReadAll(resp.Body);
         
-        appendString = append(appendString, string(body));        
+        requestData = append(requestData, string(body));
     }
     
-    var total string = strings.Join(appendString, "\n");
-
-    return total;
+    
+    var appendString string = strings.Join(requestData, "\n");
+    
+    retVal := strings.Split(appendString, "\n");
+    
+    return retVal;
 }
 
-func clear(str string)string{
-    
-    all := strings.Split(str, "\n");
+func format(all []string)[]string{
     
     clean := []string{};
-
+    
     for _,value := range all {
     
         value = strings.TrimSpace(value);
@@ -52,13 +55,19 @@ func clear(str string)string{
         var isFour bool = strings.HasPrefix(value, "127.0.0.1 ");
         var isSix bool = strings.HasPrefix(value, "::1 ");
     
-        if(!exists(value, clean) && !isComment){
+        if(!isComment){
         
             value = strings.Split(value, "#")[0];
             value = strings.TrimSpace(value);
             value = strings.Replace(value, "\t", " ", -1);
-            value = strings.Replace(value, "  ", " ", -1);
-        
+            
+            var old string = "";
+            
+            for old != value {
+                old = value;
+                value = strings.Replace(value, "  ", " ", 1);
+            }
+            
             clean = append(clean, value);
 
             if(isFour){
@@ -69,17 +78,30 @@ func clear(str string)string{
         }
     }
     
-    var retVal string = strings.Join(clean, "\n");
+    return clean;
+}
+
+func rmDupes(pretty []string)string{
+
+    final := []string{};
+    
+    for _,value := range pretty {
+    
+        if(exists(value, final) == false){
+            final = append(final, value);
+        }
+    }
+    
+    var retVal string = strings.Join(final, "\n");
     return retVal;
 }
 
+
 func exists(str string, list []string) bool{
-    var toSix string = strings.Replace(str, "127.0.0.1 ", "::1 ", 1);
-    var toFour string = strings.Replace(str, "::1 ", "127.0.0.1 ", 1);
     
     for _,v := range list{
     
-        if (toSix == v || toFour == v) {
+        if(str == v){
             return true;
         }
     }
