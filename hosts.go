@@ -9,30 +9,32 @@ import ("net/http"
 func main(){
     content := fetch();
     fmt.Println(clear(content));
-    
 }
 
 func fetch()string{
-
-    src := make(map[int]string);
     
-    src[0] = "http://someonewhocares.org/hosts/ipv6/hosts";
-    src[1] = "http://"
+    var server string = "https://raw.githubusercontent.com/roypur/hosts/master/src";
     
-    appendString := []string{""};
+    resp,_ := http.Get(server);
+    defer resp.Body.Close();
+    body,_ := ioutil.ReadAll(resp.Body);
     
-    for _,v := range src{
-        resp,_ := http.Get(v);
+    src := strings.Split(str, "\n");
+    
+    appendString := []string{};
+    
+    var j int = len(src) - 1;
+    
+    for i := 0; i<=j; i++ {
+        resp,_ := http.Get(src[i]);
         defer resp.Body.Close();
-        fmt.Println("done");
         body,_ := ioutil.ReadAll(resp.Body);
-    
-        var i int = 0;
-        appendString[i]= string(body);        
-        i++;
         
+        appendString = append(appendString, string(body));        
     }
+    
     var total string = strings.Join(appendString, "\n");
+
     return total;
 }
 
@@ -42,6 +44,8 @@ func clear(str string)string{
     
     clean := []string{};
     
+    
+    //add ipv6 localhost if missing
     for _,value := range all {
     
         value = strings.TrimSpace(value);
@@ -55,13 +59,14 @@ func clear(str string)string{
         }
     }
     
+    //add ipv4 localhost if missing
     for _,value := range all {
         value = strings.TrimSpace(value);
         
         var isComment bool = strings.HasPrefix(value, "#");
-        var isFour bool = strings.HasPrefix(value, "::1 ");
+        var isSix bool = strings.HasPrefix(value, "::1 ");
     
-        if(!exists(value, clean) && !isComment && isFour){
+        if(!exists(value, clean) && !isComment && isSix){
             clean = append(clean, value);
             clean = append(clean, strings.Replace(value, "::1 ", "127.0.0.1", 1));
         }
