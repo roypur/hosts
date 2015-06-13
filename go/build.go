@@ -119,7 +119,7 @@ func write(file string){
     if(runtime.GOOS == "linux"){
         filename = "/etc/hosts";
     }else if(runtime.GOOS == "windows"){
-        filename = "%SystemRoot%/system32/drivers/etc/hosts";
+        filename = "C:/Windows/system32/drivers/etc/hosts";
     }
     
     f, err := os.Create(filename)
