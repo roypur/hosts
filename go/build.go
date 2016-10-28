@@ -20,7 +20,10 @@ func fetch()[]string{
     
     var server string = "https://raw.githubusercontent.com/roypur/hosts/master/src";
     
-    resp,_ := http.Get(server);
+    resp,err := http.Get(server);
+    if err != nil{
+        return make([]string, 1);
+    }
     defer resp.Body.Close();
     body,_ := ioutil.ReadAll(resp.Body);
     
@@ -31,11 +34,12 @@ func fetch()[]string{
     var j int = len(src) - 1;
     
     for i := 0; i<=j; i++ {
-        resp,_ := http.Get(src[i]);
-        defer resp.Body.Close();
-        body,_ := ioutil.ReadAll(resp.Body);
-        
-        requestData = append(requestData, string(body));
+        resp,err := http.Get(src[i]);
+        if err == nil{
+            body,_ := ioutil.ReadAll(resp.Body);
+            requestData = append(requestData, string(body));
+            resp.Body.Close();
+        }
     }
     
     
@@ -126,10 +130,9 @@ func write(file string){
 
     if err != nil {
         fmt.Println(err)
+        return
     }
-
     fmt.Println(" Write to file : " + filename)
-    
     n, err := io.WriteString(f, file)
 
     if err != nil {
