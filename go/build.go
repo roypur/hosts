@@ -18,7 +18,7 @@ func main(){
 
 func fetch()[]string{
     
-    var server string = "https://raw.githubusercontent.com/roypur/hosts/master/src";
+    var server string = "https://raw.githubusercontent.com/roypur/hosts/master/ipv4/src";
     
     resp,err := http.Get(server);
     if err != nil{
